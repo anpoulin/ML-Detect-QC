@@ -1,13 +1,9 @@
 import matplotlib.pyplot as plt
-import numpy             as np
-#import glob
-#from scipy.signal import medfilt2d
-#from scipy.signal import detrend
-#from numpy.fft import fft2,ifft2
+import numpy as np
 from scipy import ndimage
 
 from pathlib import Path
-#import obspy.io.segy.core
+
 from obspy import read
 
 #from scipy.ndimage import gaussian_filter
@@ -89,39 +85,7 @@ def fk_filter(data, fs, ch_space, max_wavenum, min_wavenum, max_freq, min_freq, 
         
     return imagep
 
-def query_yes_no(question, default="no"):
-    """Ask a yes/no question via raw_input() and return their answer.
 
-    "question" is a string that is presented to the user.
-    "default" is the presumed answer if the user just hits <Enter>.
-        It must be "yes" (the default), "no" or None (meaning
-        an answer is required of the user).
-
-    The "answer" return value is True for "yes" or False for "no".
-    """
-    valid = {"yes": True, "y": True, "ye": True,
-             "no": False, "n": False, "]": False}
-    if default is None:
-        prompt = " [y/n] "
-    elif default == "yes":
-        prompt = " [Y/n] "
-    elif default == "no":
-        prompt = " [y/N] "
-    else:
-        raise ValueError("invalid default answer: '%s'" % default)
-
-    while True:
-        sys.stdout.write(question + prompt)
-        choice = input().lower()
-        if default is not None and choice == '':
-            return valid[default]
-        elif choice in valid:
-            return valid[choice]
-        else:
-            sys.stdout.write("Please respond with 'yes' or 'no' "
-
-                             "(or 'y' or 'n').\n")
-                             
 
 if __name__ == "__main__":
 
@@ -130,7 +94,7 @@ if __name__ == "__main__":
     #glob_path       = Path(r"Z:\SeiBer\ManualEventExtraction\SEGY")
     glob_path       = Path(r"Z:\Detection\mseis\IW5_35_252")
     #glob_path       = Path(r"Z:\SeiBer\ManualEventExtraction\SEGY_2")
-    EvtData         = [str(pp) for pp in glob_path.glob("**/*36evt.sgy")]
+    EvtData         = [str(pp) for pp in glob_path.glob("*.sgy")]
     EvtData.sort()
     
     #print (EvtData)
@@ -140,11 +104,6 @@ if __name__ == "__main__":
     #noiseDir        = Path(r"G:\LKAB2_MSeis\01_Detect\Full_04\LKAB2_full04_Noise")
     #evtDir          = Path(r"G:\LKAB2_MSeis\01_Detect\Full_04\LKAB2_full04_SortedEvt")
     
-    if not os.path.exists(noiseDir):
-        os.makedirs(noiseDir)
-        
-    if not os.path.exists(evtDir):
-        os.makedirs(evtDir)
         
         
     #first_ch   = 1000
@@ -155,7 +114,11 @@ if __name__ == "__main__":
     #fs              = 2000.
     ch_space        =  1.0
     
-    
+    #bandpass filter
+    freqmin = 10
+    freqmax = 100
+
+
     # f-k filter
     max_wavenum     =   0.1
     min_wavenum     =   0.01   
@@ -167,23 +130,15 @@ if __name__ == "__main__":
     for file in EvtData:
             #if int(file[-12:-7]) > 0:
             st =read(file,format='SEGY')
-            st.detrend("linear")
-            st.taper(max_percentage=0.01, type="hann")
+            #st.detrend("linear")
+            #st.taper(max_percentage=0.01, type="hann")
             #st.filter("bandpass", freqmin=10, freqmax=50, zerophase=True)
-            st.filter("bandpass", freqmin=8, freqmax=100, zerophase=True)
+            st.filter("bandpass", freqmin, freqmax, zerophase=True)
             #print(st[0].stats.delta)
             
             data, fs    =   stream_to_numpy(st, normalise=False)  
             print(file)
             data = data[first_ch:,:]
-            #print(np.shape(data))
-            #print (np.max(data), np.min(data))
-            #acousticData = detrend(data, axis=1, type='linear', bp=0, overwrite_data=True)
-            
-            #vMine = np.percentile(acousticData,0.01)
-            #vMaxe = np.percentile(acousticData,99.99)
-           
-            #imagep = fk_filter(acousticData.T,fs,ch_space, max_wavenum, min_wavenum, max_freq, min_freq, plot=False)
 
             vMine = np.percentile(data,10.0)
             vMaxe = np.percentile(data,90.0)
@@ -199,15 +154,7 @@ if __name__ == "__main__":
             plt.xticks(fontsize=14)
             plt.tight_layout()
             outfile = 'ExampleEvt_'+file[-12:-4]+'.png'
-            #plt.savefig(outfile, format='png', dpi=300)
-            plt.show()
+            plt.savefig(outfile, format='png', dpi=300)
             
-            # Is this a real event? y/n
-            var=query_yes_no("Is this an event? (y/n) (Default is y)")
             
-            if var==False:
-                os.system("copy %s %s" % (file, noiseDir))
-                #os.system("mv %s %s" % (file, noiseDir))
-            else:
-                os.system("copy %s %s" % (file, evtDir))
-                #os.system("mv %s %s" % (file, evtDir))
+
