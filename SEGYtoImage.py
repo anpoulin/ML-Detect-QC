@@ -90,7 +90,7 @@ def fk_filter(data, fs, ch_space, max_wavenum, min_wavenum, max_freq, min_freq, 
 if __name__ == "__main__":
 
     directory = 'C:/Projects/FORGE/SEGY/2024/097/'
-    SEGYdir = '/300ms'
+    SEGYdir = 'SEGY-Class2'
     
     #glob_path       = Path(r"Z:\SeiBer\ManualEventExtraction\SEGY")
     glob_path       = Path(directory)
@@ -98,6 +98,10 @@ if __name__ == "__main__":
     EvtData         = [str(pp) for pp in glob_path.glob("*.sgy")]
     EvtData.sort()
     
+    if not os.path.exists(directory+SEGYdir):
+        os.makedirs(directory+SEGYdir)
+
+
     #print (EvtData)
     #noiseDir        = Path(r"G:\LKAB2_MSeis\01_Detect\Full_04\LKAB2_full04_Noise")
     #evtDir          = Path(r"G:\LKAB2_MSeis\01_Detect\Full_04\LKAB2_full04_SortedEvt")
@@ -109,8 +113,6 @@ if __name__ == "__main__":
     first_ch   = 1
     last_ch    = 2486
 
-    first_samp = 300
-    last_samp = 2000
     
     #fs              = 2000.
     ch_space        =  1.0
@@ -129,6 +131,9 @@ if __name__ == "__main__":
    
     
     for file in EvtData:
+            
+            first_samp = np.random.randint(0,900)
+            last_samp = first_samp+2000
             #if int(file[-12:-7]) > 0:
             st =read(file,format='SEGY')
             #st.detrend("linear")
@@ -149,13 +154,17 @@ if __name__ == "__main__":
             #plt.imshow(imagep, aspect='auto', vmin=-800,vmax=800, cmap="gray")
             #plt.imshow(imagep, aspect='auto', vmin=-200,vmax=200, cmap="gray", extent=(0,300,0,1308))
             plt.imshow(data, aspect='auto', vmin=-abs(vMine),vmax=abs(vMaxe), cmap="gray")
-            plt.xlabel('Time sample\n',fontsize=16)
-            plt.ylabel('Channel\n',fontsize=16)
-            plt.yticks(fontsize=14)
-            plt.xticks(fontsize=14)
+            plt.subplots_adjust(top = 1, bottom = 0, right = 1, left = 0, hspace = 0, wspace = 0)
+            plt.margins(0, 0)
+            #plt.xlabel('Time sample\n',fontsize=16)
+            #plt.ylabel('Channel\n',fontsize=16)
+            #plt.yticks(fontsize=14)
+            #plt.xticks(fontsize=14)
+            plt.axis('off')
+            #plt.tight_layout()
             plt.tight_layout()
-            outfile = '\ExampleEvt_'+file[-12:-4]+'.png'
-            plt.savefig(directory+SEGYdir+outfile, format='png', dpi=300)
+            outfile = 'ExampleEvt_'+file[-12:-4]+'.png'
+            plt.savefig(directory+SEGYdir+'/'+outfile, format='png', dpi=150, bbox_inches='tight', pad_inches=0)
             
             
 
