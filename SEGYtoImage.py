@@ -89,18 +89,16 @@ def fk_filter(data, fs, ch_space, max_wavenum, min_wavenum, max_freq, min_freq, 
 
 if __name__ == "__main__":
 
-    
+    directory = 'C:/Projects/FORGE/SEGY/2024/097/'
+    SEGYdir = '/300ms'
     
     #glob_path       = Path(r"Z:\SeiBer\ManualEventExtraction\SEGY")
-    glob_path       = Path(r"Z:\Detection\mseis\IW5_35_252")
+    glob_path       = Path(directory)
     #glob_path       = Path(r"Z:\SeiBer\ManualEventExtraction\SEGY_2")
     EvtData         = [str(pp) for pp in glob_path.glob("*.sgy")]
     EvtData.sort()
     
     #print (EvtData)
-      
-    noiseDir        = Path(r"Z:\Detection\mseis\TestAS\SortedNoise")
-    evtDir          = Path(r"Z:\Detection\mseis\TestAS\SortedEvt")
     #noiseDir        = Path(r"G:\LKAB2_MSeis\01_Detect\Full_04\LKAB2_full04_Noise")
     #evtDir          = Path(r"G:\LKAB2_MSeis\01_Detect\Full_04\LKAB2_full04_SortedEvt")
     
@@ -109,7 +107,10 @@ if __name__ == "__main__":
     #first_ch   = 1000
     #last_ch    = 1900
     first_ch   = 1
-    last_ch    = 1650
+    last_ch    = 2486
+
+    first_samp = 300
+    last_samp = 2000
     
     #fs              = 2000.
     ch_space        =  1.0
@@ -133,12 +134,12 @@ if __name__ == "__main__":
             #st.detrend("linear")
             #st.taper(max_percentage=0.01, type="hann")
             #st.filter("bandpass", freqmin=10, freqmax=50, zerophase=True)
-            st.filter("bandpass", freqmin, freqmax, zerophase=True)
+            st.filter("bandpass", freqmin=freqmin, freqmax=freqmax, zerophase=True)
             #print(st[0].stats.delta)
             
             data, fs    =   stream_to_numpy(st, normalise=False)  
             print(file)
-            data = data[first_ch:,:]
+            data = data[first_ch:last_ch,first_samp:last_samp]
 
             vMine = np.percentile(data,10.0)
             vMaxe = np.percentile(data,90.0)
@@ -153,8 +154,8 @@ if __name__ == "__main__":
             plt.yticks(fontsize=14)
             plt.xticks(fontsize=14)
             plt.tight_layout()
-            outfile = 'ExampleEvt_'+file[-12:-4]+'.png'
-            plt.savefig(outfile, format='png', dpi=300)
+            outfile = '\ExampleEvt_'+file[-12:-4]+'.png'
+            plt.savefig(directory+SEGYdir+outfile, format='png', dpi=300)
             
             
 
