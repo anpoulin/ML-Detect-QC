@@ -163,7 +163,7 @@ if __name__ == "__main__":
             plt.axis('off')
             #plt.tight_layout()
             plt.tight_layout()
-            outfile = 'ExampleEvt_'+file[-12:-4]+'.png'
+            outfile = file[-12:-4]+'-Class2.png'
             plt.savefig(directory+SEGYdir+'/'+outfile, format='png', dpi=150, bbox_inches='tight', pad_inches=0)
             
             
