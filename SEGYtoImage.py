@@ -146,8 +146,8 @@ if __name__ == "__main__":
             print(file)
             data = data[first_ch:last_ch,first_samp:last_samp]
 
-            vMine = np.percentile(data,10.0)
-            vMaxe = np.percentile(data,90.0)
+            vMine = np.percentile(data,05.0)
+            vMaxe = np.percentile(data,95.0)
             
             plt.figure(figsize=(8,6))
             
