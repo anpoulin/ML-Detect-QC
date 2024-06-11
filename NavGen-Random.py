@@ -5,9 +5,26 @@ from io import StringIO
 from datetime import datetime, timedelta
 from pyproj import CRS, Transformer
 import random
+from random import randrange
+
+
+def random_date(start, end):
+    """
+    This function will return a random datetime between two datetime 
+    objects.
+    """
+    delta = end - start
+    int_delta = (delta.days * 24 * 60 * 60) + delta.seconds
+    random_second = randrange(int_delta)
+    return start + timedelta(seconds=random_second)
+
+start = datetime.strptime('01/01/2024 00:00:00.600', '%m/%d/%Y %H:%M:%S.%f')
+stop = datetime.strptime('01/30/2024 00:00:00.800', '%m/%d/%Y %H:%M:%S.%f')
+
+numOfShots = 1000
+
 
 #inputXLSX   = '/Users/david/Developer/Silixa/CenovusLashburn/Shot Log.xlsx'
-inputCSV    = r'C:\Projects\RTE\Dev\NAV\EventCatalogue_16A_9.csv'
 path, file = os.path.split(inputCSV)
 
 # # ITRF2014 epsg ITRF2014 and WGS84 are extremly similar, so just use WGS84
@@ -32,17 +49,17 @@ path, file = os.path.split(inputCSV)
 
 
 
-df = pd.read_csv(inputCSV) 
+
 my_list = list(df)
 colsOut = list()
-for i in range(len(df)):
+for i in range(len(numOfShots)):
     cnt = 1
     shotNum = cnt+i
     UTC     = df[my_list[0]][i]
     DTobject = datetime.strptime(str(UTC), '%Y%m%d%H%M%S.%f')
-    DToffset = 1
-    print(DToffset)
-    DTevtOT = df[my_list[9]][i]
+    #DToffset = 1
+    #print(DToffset)
+    #DTevtOT = df[my_list[9]][i]
     DTevtRan = DTobject-timedelta(seconds=DToffset)+timedelta(seconds=DTevtOT)
     # line    = df[my_list[4]][i]
     # station = df[my_list[5]][i]
@@ -53,6 +70,6 @@ for i in range(len(df)):
 
 
 # Output filenames
-fOut = path + '/NAV_16A_9N.csv'
+fOut = path + '/NAV_16A_9N-Ran.csv'
 # Use header='...' and comments='' to output NAV compatible header with columns names (no hash mark)
 np.savetxt(fOut, colsOut, fmt='%s',  delimiter=',', comments='', header='shotNum,timestamp (UTC)')
