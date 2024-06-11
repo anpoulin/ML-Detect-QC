@@ -23,6 +23,7 @@ stop = datetime.strptime('01/30/2024 00:00:00.800', '%m/%d/%Y %H:%M:%S.%f')
 
 numOfShots = 1000
 
+outputPath = 'C:/Projects/FORGE/NAV'
 
 #inputXLSX   = '/Users/david/Developer/Silixa/CenovusLashburn/Shot Log.xlsx'
 path, file = os.path.split(inputCSV)
@@ -55,21 +56,12 @@ colsOut = list()
 for i in range(len(numOfShots)):
     cnt = 1
     shotNum = cnt+i
-    UTC     = df[my_list[0]][i]
     DTobject = datetime.strptime(str(UTC), '%Y%m%d%H%M%S.%f')
-    #DToffset = 1
-    #print(DToffset)
-    #DTevtOT = df[my_list[9]][i]
-    DTevtRan = DTobject-timedelta(seconds=DToffset)+timedelta(seconds=DTevtOT)
-    # line    = df[my_list[4]][i]
-    # station = df[my_list[5]][i]
-    # X = df[my_list[6]][i]
-    # Y = df[my_list[7]][i]
-    # Z = df[my_list[8]][i]
+    DTevtRan = print(random_date(start, stop))
     colsOut.append( [shotNum, DTevtRan.strftime('%Y%m%d %H:%M:%S.%f')] )
 
 
 # Output filenames
-fOut = path + '/NAV_16A_9N-Ran.csv'
+fOut = outputPath + '/NAV_16A_9N-Ran.csv'
 # Use header='...' and comments='' to output NAV compatible header with columns names (no hash mark)
 np.savetxt(fOut, colsOut, fmt='%s',  delimiter=',', comments='', header='shotNum,timestamp (UTC)')
